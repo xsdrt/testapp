@@ -7,5 +7,6 @@ type application struct {
 }
 
 func main() {
-	initApplication()
+	h := initApplication()
+	h.App.ListenAndServe()
 }

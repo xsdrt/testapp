@@ -6,4 +6,8 @@ replace github.com/xsdrt/hispeed2 => ../hispeed2
 
 require github.com/xsdrt/hispeed2 v0.0.0-20231212023131-649659969455
 
-require github.com/joho/godotenv v1.5.1 // indirect
+require (
+	
+	github.com/go-chi/chi/v5 v5.0.11 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
+)

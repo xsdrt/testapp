@@ -3,9 +3,12 @@ package hispeed2
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
+	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -18,8 +21,17 @@ type HiSpeed2 struct {
 	ErrorLog *log.Logger
 	InfoLog  *log.Logger
 	RootPath string
+	Routes   *chi.Mux
+	config   config
 }
 
+type config struct {
+	port     string
+	renderer string
+}
+
+// New reads the .env file, creates our app config, populates the HiSpeed2 type with settings
+// based on the .env values, and creates necessary folders and files if they don't exist...
 func (h *HiSpeed2) New(rootPath string) error {
 	pathConfig := initPaths{
 		rootPath:    rootPath,
@@ -48,10 +60,18 @@ func (h *HiSpeed2) New(rootPath string) error {
 	h.ErrorLog = errorLog
 	h.Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
 	h.Version = version
+	h.RootPath = rootPath
+	h.Routes = h.routes().(*chi.Mux) // Cast to a pointer of chi.Mux...
+
+	h.config = config{
+		port:     os.Getenv("PORT"),
+		renderer: os.Getenv("RENDERER"),
+	}
 
 	return nil
 }
 
+// Init creates necessary folders for our HiSpped2 application...
 func (h *HiSpeed2) Init(p initPaths) error {
 	root := p.rootPath //holds the full root path to the web app...
 	for _, path := range p.folderNames {
@@ -62,6 +82,22 @@ func (h *HiSpeed2) Init(p initPaths) error {
 		}
 	}
 	return nil
+}
+
+// ListenAndServe starts the web server...
+func (h *HiSpeed2) ListenAndServe() {
+	srv := &http.Server{
+		Addr:         fmt.Sprintf(":%s", os.Getenv("PORT")),
+		ErrorLog:     h.ErrorLog,
+		Handler:      h.routes(),
+		IdleTimeout:  30 * time.Second,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 600 * time.Second, // Longtime outfor dev purposes for now...
+	}
+
+	h.InfoLog.Printf("Listening on port %s", os.Getenv("PORT"))
+	err := srv.ListenAndServe()
+	h.ErrorLog.Fatal(err)
 }
 
 func (h *HiSpeed2) checkDotEnv(path string) error {
