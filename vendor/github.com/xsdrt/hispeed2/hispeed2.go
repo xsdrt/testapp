@@ -14,6 +14,8 @@ import (
 
 const version = "1.0.0"
 
+// Hispeed2  is the overall type for the Hispeed2 package... Exported members in tghis type
+// are available to any applicatiomn that uses it...Other than the config as no reason for anybody using Hispeed 2 needs to know this info...
 type HiSpeed2 struct {
 	AppName  string
 	Debug    bool
@@ -27,7 +29,7 @@ type HiSpeed2 struct {
 
 type config struct {
 	port     string
-	renderer string
+	renderer string // What template engine to use , either the std Go or Jet pkg...
 }
 
 // New reads the .env file, creates our app config, populates the HiSpeed2 type with settings
@@ -54,7 +56,7 @@ func (h *HiSpeed2) New(rootPath string) error {
 		return err
 	}
 
-	// Creatoe loggers...
+	// Create loggers...
 	infoLog, errorLog := h.startLogers()
 	h.InfoLog = infoLog
 	h.ErrorLog = errorLog
@@ -92,7 +94,7 @@ func (h *HiSpeed2) ListenAndServe() {
 		Handler:      h.routes(),
 		IdleTimeout:  30 * time.Second,
 		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 600 * time.Second, // Longtime outfor dev purposes for now...
+		WriteTimeout: 600 * time.Second, // Longtime out for dev purposes for now...
 	}
 
 	h.InfoLog.Printf("Listening on port %s", os.Getenv("PORT"))
