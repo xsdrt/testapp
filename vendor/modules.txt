@@ -8,4 +8,5 @@ github.com/joho/godotenv
 # github.com/xsdrt/hispeed2 v0.0.0-20231212023131-649659969455 => ../hispeed2
 ## explicit; go 1.21.5
 github.com/xsdrt/hispeed2
+github.com/xsdrt/hispeed2/render
 # github.com/xsdrt/hispeed2 => ../hispeed2

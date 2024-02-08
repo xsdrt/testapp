@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
+	"github.com/xsdrt/hispeed2/render"
 )
 
 const version = "1.0.0"
@@ -24,6 +25,7 @@ type HiSpeed2 struct {
 	InfoLog  *log.Logger
 	RootPath string
 	Routes   *chi.Mux
+	Render   *render.Render
 	config   config
 }
 
@@ -70,6 +72,8 @@ func (h *HiSpeed2) New(rootPath string) error {
 		renderer: os.Getenv("RENDERER"),
 	}
 
+	h.Render = h.createRenderer(h)
+
 	return nil
 }
 
@@ -91,7 +95,7 @@ func (h *HiSpeed2) ListenAndServe() {
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", os.Getenv("PORT")),
 		ErrorLog:     h.ErrorLog,
-		Handler:      h.routes(),
+		Handler:      h.Routes,
 		IdleTimeout:  30 * time.Second,
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 600 * time.Second, // Longtime out for dev purposes for now...
@@ -118,4 +122,14 @@ func (h *HiSpeed2) startLogers() (*log.Logger, *log.Logger) { // made some vars,
 	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
 	return infoLog, errorLog
+}
+
+func (h *HiSpeed2) createRenderer(his *HiSpeed2) *render.Render {
+	myRenderer := render.Render{
+		Renderer: his.config.renderer,
+		RootPath: his.RootPath,
+		Port:     his.config.port,
+	}
+
+	return &myRenderer
 }

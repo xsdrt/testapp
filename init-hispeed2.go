@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"testapp/handlers"
 
 	"github.com/xsdrt/hispeed2"
 )
@@ -22,11 +23,16 @@ func initApplication() *application {
 
 	his.AppName = "testapp"
 
-	his.InfoLog.Println("Debug is set to", his.Debug)
-
-	app := &application{
+	myHandlers := &handlers.Handlers{
 		App: his,
 	}
+
+	app := &application{
+		App:      his,
+		Handlers: myHandlers,
+	}
+
+	app.App.Routes = app.routes()
 
 	return app
 
