@@ -1,0 +1,26 @@
+{{extends "./layouts/base.jet"}}
+
+{{block browserTitle()}}HiSpeed2{{end}}
+
+{{block css()}}
+
+{{end}}
+
+{{block pageContent()}}
+
+<div class="col text-center">
+    <div class="d-flex align-items-center justify-content-center" style="height: 100vh;">
+        <div>
+            <img src="/public/images/hsld.jpg" class="mb-5" style="width: 100px;height:auto;">
+            <h1>HiSpeed2 (Jet Templates)</h1>
+            <hr>
+            <small class="text-muted">Jet Go and build something awesome</small>
+        </div>
+    </div>        
+</div>        
+    
+{{end}}
+
+{{block js()}}
+
+{{end}}
