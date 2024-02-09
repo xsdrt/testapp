@@ -72,7 +72,7 @@ func (h *HiSpeed2) New(rootPath string) error {
 		renderer: os.Getenv("RENDERER"),
 	}
 
-	h.Render = h.createRenderer(h)
+	h.createRenderer()
 
 	return nil
 }
@@ -124,12 +124,12 @@ func (h *HiSpeed2) startLogers() (*log.Logger, *log.Logger) { // made some vars,
 	return infoLog, errorLog
 }
 
-func (h *HiSpeed2) createRenderer(his *HiSpeed2) *render.Render {
+func (h *HiSpeed2) createRenderer() {
 	myRenderer := render.Render{
-		Renderer: his.config.renderer,
-		RootPath: his.RootPath,
-		Port:     his.config.port,
+		Renderer: h.config.renderer,
+		RootPath: h.RootPath,
+		Port:     h.config.port,
 	}
+	h.Render = &myRenderer
 
-	return &myRenderer
 }
