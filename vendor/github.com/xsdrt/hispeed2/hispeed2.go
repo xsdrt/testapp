@@ -9,9 +9,11 @@ import (
 	"time"
 
 	"github.com/CloudyKit/jet/v6"
+	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/xsdrt/hispeed2/render"
+	"github.com/xsdrt/hispeed2/session"
 )
 
 const version = "1.0.0"
@@ -27,13 +29,16 @@ type HiSpeed2 struct {
 	RootPath string
 	Routes   *chi.Mux
 	Render   *render.Render
+	Session  *scs.SessionManager
 	JetViews *jet.Set
 	config   config
 }
 
 type config struct {
-	port     string
-	renderer string // What template engine to use , either the std Go or Jet pkg...
+	port        string
+	renderer    string // What template engine to use , either the std Go or Jet pkg...
+	cookie      cookieConfig
+	sessionType string
 }
 
 // New reads the .env file, creates our app config, populates the HiSpeed2 type with settings
@@ -72,7 +77,27 @@ func (h *HiSpeed2) New(rootPath string) error {
 	h.config = config{
 		port:     os.Getenv("PORT"),
 		renderer: os.Getenv("RENDERER"),
+		cookie: cookieConfig{
+			name:     os.Getenv("COOKIE_NAME"),
+			lifetime: os.Getenv("COOKIE_LIFETIME"),
+			persist:  os.Getenv("COOKIE_PERSISTS"),
+			secure:   os.Getenv("COOKIE_SECURE"),
+			domain:   os.Getenv("COOKIE_DOMAIN"),
+		},
+		sessionType: os.Getenv("SESSION_TYPE"),
 	}
+
+	// create a session...
+
+	sess := session.Session{
+		CookieLifetime: h.config.cookie.lifetime,
+		CookiePersist:  h.config.cookie.persist,
+		CookieName:     h.config.cookie.name,
+		SessionType:    h.config.sessionType,
+		CookieDomain:   h.config.cookie.domain,
+	}
+	h.Session = sess.InitSession()
+
 	var views = jet.NewSet(
 		jet.NewOSFileSystemLoader(fmt.Sprintf("%s/views", rootPath)),
 		jet.InDevelopmentMode(),
@@ -85,7 +110,7 @@ func (h *HiSpeed2) New(rootPath string) error {
 	return nil
 }
 
-// Init creates necessary folders for our HiSpped2 application...
+// Init creates necessary folders for our HiSpeed2 application...
 func (h *HiSpeed2) Init(p initPaths) error {
 	root := p.rootPath //holds the full root path to the web app...
 	for _, path := range p.folderNames {
