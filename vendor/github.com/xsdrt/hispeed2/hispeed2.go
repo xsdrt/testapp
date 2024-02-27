@@ -30,6 +30,7 @@ type HiSpeed2 struct {
 	Routes   *chi.Mux
 	Render   *render.Render
 	Session  *scs.SessionManager
+	DB       Database
 	JetViews *jet.Set
 	config   config
 }
@@ -39,6 +40,7 @@ type config struct {
 	renderer    string // What template engine to use , either the std Go or Jet pkg...
 	cookie      cookieConfig
 	sessionType string
+	database    databaseConfig
 }
 
 // New reads the .env file, creates our app config, populates the HiSpeed2 type with settings
@@ -67,6 +69,20 @@ func (h *HiSpeed2) New(rootPath string) error {
 
 	// Create loggers...
 	infoLog, errorLog := h.startLogers()
+
+	// connect to the database
+	if os.Getenv("DATABASE_TYPE") != "" {
+		db, err := h.OpenDB(os.Getenv("DATABASE_TYPE"), h.BuildDSN())
+		if err != nil {
+			errorLog.Println(err)
+			os.Exit(1)
+		}
+		h.DB = Database{
+			DataType: os.Getenv("DATABASE_TYPE"),
+			Pool:     db,
+		}
+	}
+
 	h.InfoLog = infoLog
 	h.ErrorLog = errorLog
 	h.Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
@@ -165,5 +181,29 @@ func (h *HiSpeed2) createRenderer() {
 		JetViews: h.JetViews,
 	}
 	h.Render = &myRenderer
+
+}
+
+func (h *HiSpeed2) BuildDSN() string {
+	var dsn string //store the connection string in this var...
+
+	switch os.Getenv("DATABASE_TYPE") {
+	case "postgres", "postgresql":
+		dsn = fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=%s timezone=UTC connect_timeout=5",
+			os.Getenv("DATABASE_HOST"),
+			os.Getenv("DATABASE_PORT"),
+			os.Getenv("DATABASE_USER"),
+			os.Getenv("DATABASE_NAME"),
+			os.Getenv("DATABASE_SSL_MODE"))
+
+		if os.Getenv("DATABASE_PASS") != "" { //need to support some postgres that do not require a password...
+			dsn = fmt.Sprintf("%s password=%s", dsn, os.Getenv("DATABASE_PASS"))
+		}
+
+	default:
+
+	}
+
+	return dsn
 
 }
