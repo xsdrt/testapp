@@ -93,6 +93,8 @@ github.com/xsdrt/hispeed2/render
 github.com/xsdrt/hispeed2/session
 # golang.org/x/crypto v0.17.0
 ## explicit; go 1.18
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 # golang.org/x/sync v0.1.0
 ## explicit
