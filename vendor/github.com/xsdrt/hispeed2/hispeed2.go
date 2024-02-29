@@ -154,6 +154,8 @@ func (h *HiSpeed2) ListenAndServe() {
 		WriteTimeout: 600 * time.Second, // Longtime out for dev purposes for now...
 	}
 
+	defer h.DB.Pool.Close()
+
 	h.InfoLog.Printf("Listening on port %s", os.Getenv("PORT"))
 	err := srv.ListenAndServe()
 	h.ErrorLog.Fatal(err)
