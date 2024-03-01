@@ -1,6 +1,7 @@
 package main
 
 import (
+	"testapp/data"
 	"testapp/handlers"
 
 	"github.com/xsdrt/hispeed2"
@@ -9,6 +10,7 @@ import (
 type application struct {
 	App      *hispeed2.HiSpeed2
 	Handlers *handlers.Handlers
+	Models   data.Models
 }
 
 func main() {

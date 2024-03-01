@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"testapp/data"
 	"testapp/handlers"
 
 	"github.com/xsdrt/hispeed2"
@@ -33,6 +34,8 @@ func initApplication() *application {
 	}
 
 	app.App.Routes = app.routes()
+
+	app.Models = data.New(app.App.DB.Pool) // Intilize the models...
 
 	return app
 
