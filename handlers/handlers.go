@@ -2,13 +2,15 @@ package handlers
 
 import (
 	"net/http"
+	"testapp/data"
 
 	"github.com/CloudyKit/jet/v6"
 	"github.com/xsdrt/hispeed2"
 )
 
 type Handlers struct {
-	App *hispeed2.HiSpeed2
+	App    *hispeed2.HiSpeed2
+	Models data.Models
 }
 
 func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {

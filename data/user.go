@@ -151,7 +151,11 @@ func (u *User) ResetPassword(id int, password string) error {
 	return nil
 }
 
-func (u *User) PaasswordMatches(PlainText string) (bool, error) {
+// PasswordMatches verifies a supplied password against the hash stored in the database.
+// It will return true if it is valid, and subsequintly false if the password does not match,
+// or if there is an error.  Should Note: an error is on;y returmned if something goes wrong
+// (since an invalid password is not an error... it is just the wrong password!)
+func (u *User) PasswordMatches(PlainText string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(PlainText))
 	if err != nil {
 		switch {
