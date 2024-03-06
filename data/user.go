@@ -64,6 +64,7 @@ func (u *User) GetByEmail(email string) (*User, error) {
 	return &theUser, nil
 }
 
+// Get (1) one user by id...
 func (u *User) Get(id int) (*User, error) {
 	var theUser User
 	collection := upper.Collection(u.Table())
@@ -76,7 +77,7 @@ func (u *User) Get(id int) (*User, error) {
 
 	var token Token
 	collection = upper.Collection(token.Table())
-	res = collection.Find(up.Cond{"user_id =": theUser.ID, "expiry <": time.Now()}).OrderBy("created_at desc")
+	res = collection.Find(up.Cond{"user_id =": theUser.ID, "expiry >": time.Now()}).OrderBy("created_at desc")
 	err = res.One(&token)
 	if err != nil {
 		if err != up.ErrNilRecord && err != up.ErrNoMoreRows {
