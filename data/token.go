@@ -194,3 +194,21 @@ func (t *Token) AuthenticateToken(r *http.Request) (*User, error) {
 
 	return user, nil
 }
+
+// validate incoming token
+func (t *Token) ValidToken(token string) (bool, error) {
+	user, err := t.GetUserForToken(token)
+	if err != nil {
+		return false, errors.New("invalid credentials") //no matching user found
+	}
+
+	if user.Token.PlainText == "" {
+		return false, errors.New("invalid credentials") //no matching token found
+	}
+
+	if user.Token.Expires.Before(time.Now()) {
+		return false, errors.New("invalid credentials") //expired token
+	}
+
+	return true, nil
+}
