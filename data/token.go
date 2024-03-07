@@ -164,32 +164,32 @@ func (t *Token) GenerateToken(userID int, ttl time.Duration) (*Token, error) {
 func (t *Token) AuthenticateToken(r *http.Request) (*User, error) {
 	authorizationHeader := r.Header.Get("Authorization")
 	if authorizationHeader == "" {
-		return nil, errors.New("no authorization header received")
+		return nil, errors.New("invalid token") //no authorization header received
 	}
 
 	headerParts := strings.Split(authorizationHeader, " ")
 	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-		return nil, errors.New("no authorization header received")
+		return nil, errors.New("invalid token") //no authorization header received
 	}
 
 	token := headerParts[1]
 
 	if len(token) != 26 { // every token should be 26 characters long...
-		return nil, errors.New("token wrong size")
+		return nil, errors.New("invalid token") //token wrong size
 	}
 
-	t, err := t.GetByToken(token)
+	tkn, err := t.GetByToken(token)
 	if err != nil {
-		return nil, errors.New("no matching token found")
+		return nil, errors.New("invalid token") //no matching token found
 	}
 
-	if t.Expires.Before(time.Now()) {
-		return nil, errors.New("expired token")
+	if tkn.Expires.Before(time.Now()) {
+		return nil, errors.New("invalid token") //expired token
 	}
 
 	user, err := t.GetUserForToken(token)
 	if err != nil {
-		return nil, errors.New("no matching user found")
+		return nil, errors.New("invalid token") //no matching user found
 	}
 
 	return user, nil
