@@ -13,7 +13,7 @@ import (
 )
 
 type Token struct {
-	ID        int       `db:"id" json:"id"`
+	ID        int       `db:"id,omitempty" json:"id"` //added omitempty as it was failing my integration tests
 	UserID    int       `db:"user_id" json:"user_id"`
 	FirstName string    `db:"first_name" json:"first_name"`
 	Email     string    `db:"email" json:"email"`
@@ -42,7 +42,7 @@ func (t *Token) GetUserForToken(token string) (*User, error) {
 		return nil, err
 	}
 
-	collection = upper.Collection("user")
+	collection = upper.Collection("users") //refactored missing s in users... mya have been affecting my integration tests.
 	res = collection.Find(up.Cond{"id": theToken.UserID})
 	err = res.One(&u)
 	if err != nil {
