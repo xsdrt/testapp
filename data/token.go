@@ -42,7 +42,7 @@ func (t *Token) GetUserForToken(token string) (*User, error) {
 		return nil, err
 	}
 
-	collection = upper.Collection("users") //refactored missing s in users... mya have been affecting my integration tests.
+	collection = upper.Collection("users") //refactored missing s in users... may have been affecting my integration tests.
 	res = collection.Find(up.Cond{"id": theToken.UserID})
 	err = res.One(&u)
 	if err != nil {

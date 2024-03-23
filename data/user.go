@@ -21,10 +21,12 @@ type User struct {
 	Token     Token     `db:"-"`
 }
 
+// Table returns the table name assoc. with this model in the database...
 func (u *User) Table() string { //this func gives us the ability to overide the users in the database
 	return "users" // so anytime refering to the table users in the db can overide; so,if legacy is called customers, overide and will refer to the users in the DB...
 }
 
+// GetAll returns a slice of every user...
 func (u *User) GetAll() ([]*User, error) {
 	collection := upper.Collection(u.Table()) // FYI upper refers to data stored in the DB as collections so will use their naming convetion...
 
@@ -111,6 +113,7 @@ func (u *User) Delete(id int) error {
 	return nil
 }
 
+// Insert a new user, and then return the newly inserted id...
 func (u *User) Insert(theUser User) (int, error) {
 	newHash, err := bcrypt.GenerateFromPassword([]byte(theUser.Password), 12)
 	if err != nil {
@@ -157,8 +160,8 @@ func (u *User) ResetPassword(id int, password string) error {
 // It will return true if it is valid, and subsequintly false if the password does not match,
 // or if there is an error.  Should Note: an error is on;y returmned if something goes wrong
 // (since an invalid password is not an error... it is just the wrong password!)
-func (u *User) PasswordMatches(PlainText string) (bool, error) {
-	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(PlainText))
+func (u *User) PasswordMatches(plainText string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainText)) // lower cased plaintext
 	if err != nil {
 		switch {
 		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
