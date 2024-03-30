@@ -2,7 +2,6 @@ package hispeed2
 
 import (
 	"log"
-	"path/filepath"
 
 	"github.com/golang-migrate/migrate/v4"
 
@@ -13,9 +12,10 @@ import (
 )
 
 func (h *HiSpeed2) MigrateUp(dsn string) error {
-	rootPath := filepath.ToSlash(h.RootPath) // Added this due to a problem in the go-migrate pkg
+	// windows only://rootPath := filepath.ToSlash(h.RootPath) // Added this due to a problem in the go-migrate pkg
 
-	m, err := migrate.New("file://"+rootPath+"/migrations", dsn) // create /open up the migration file...changed from h.RootPath to correct an interpretation problem...
+	// windows only:// m, err := migrate.New("file://"+rootPath+"/migrations", dsn) // create /open up the migration file...changed from h.RootPath to correct an interpretation problem...
+	m, err := migrate.New("file://"+h.RootPath+"/migrations", dsn)
 	if err != nil {
 		return err
 	}
@@ -29,9 +29,10 @@ func (h *HiSpeed2) MigrateUp(dsn string) error {
 }
 
 func (h *HiSpeed2) MigrateDownAll(dsn string) error {
-	rootPath := filepath.ToSlash(h.RootPath)
+	// windows only://rootPath := filepath.ToSlash(h.RootPath)
 
-	m, err := migrate.New("file://"+rootPath+"/migrations", dsn)
+	// windows only://m, err := migrate.New("file://"+rootPath+"/migrations", dsn)
+	m, err := migrate.New("file://"+h.RootPath+"/migrations", dsn)
 	if err != nil {
 		return err
 	}
@@ -45,9 +46,10 @@ func (h *HiSpeed2) MigrateDownAll(dsn string) error {
 }
 
 func (h *HiSpeed2) Steps(n int, dsn string) error {
-	rootPath := filepath.ToSlash(h.RootPath)
+	// windows only://rootPath := filepath.ToSlash(h.RootPath)
 
-	m, err := migrate.New("file://"+rootPath+"/migrations", dsn)
+	// windows only://m, err := migrate.New("file://"+rootPath+"/migrations", dsn)
+	m, err := migrate.New("file://"+h.RootPath+"/migrations", dsn)
 	if err != nil {
 		return err
 	}
@@ -61,9 +63,10 @@ func (h *HiSpeed2) Steps(n int, dsn string) error {
 }
 
 func (h *HiSpeed2) MigrateForce(dsn string) error { //if you have an error in the migration file, might be marked dirty in the DB , so force the migration...
-	rootPath := filepath.ToSlash(h.RootPath)
+	// windows only://rootPath := filepath.ToSlash(h.RootPath)
 
-	m, err := migrate.New("file://"+rootPath+"/migrations", dsn)
+	// windows only://m, err := migrate.New("file://"+rootPath+"/migrations", dsn)
+	m, err := migrate.New("file://"+h.RootPath+"/migrations", dsn)
 	if err != nil {
 		return err
 	}
