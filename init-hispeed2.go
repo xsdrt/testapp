@@ -5,6 +5,7 @@ import (
 	"os"
 	"testapp/data"
 	"testapp/handlers"
+	"testapp/middleware"
 
 	"github.com/xsdrt/hispeed2"
 )
@@ -24,19 +25,25 @@ func initApplication() *application {
 
 	his.AppName = "testapp"
 
+	myMiddleware := &middleware.Middleware{
+		App: his,
+	}
+
 	myHandlers := &handlers.Handlers{
 		App: his,
 	}
 
 	app := &application{
-		App:      his,
-		Handlers: myHandlers,
+		App:        his,
+		Handlers:   myHandlers,
+		Middleware: myMiddleware,
 	}
 
 	app.App.Routes = app.routes()
 
 	app.Models = data.New(app.App.DB.Pool) // Intilize the models...
 	myHandlers.Models = app.Models
+	app.Middleware.Models = app.Models
 
 	return app
 
