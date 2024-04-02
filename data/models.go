@@ -14,6 +14,7 @@ import (
 var db *sql.DB
 var upper db2.Session
 
+// Models is the wrapper for all database models
 type Models struct {
 	// Any models inserted here (and in the New function)
 	// are eaisly accessible throughout the entire application.
@@ -21,6 +22,7 @@ type Models struct {
 	Tokens Token
 }
 
+// New initializezes the models package for use...
 func New(databasePool *sql.DB) Models {
 	db = databasePool
 
