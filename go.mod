@@ -22,6 +22,7 @@ require (
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
+	github.com/alexedwards/scs/postgresstore v0.0.0-20240316134038-7e11d57e8885 // indirect
 	github.com/alexedwards/scs/v2 v2.7.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/containerd/continuity v0.3.0 // indirect

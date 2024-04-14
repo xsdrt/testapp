@@ -115,6 +115,7 @@ func (h *HiSpeed2) New(rootPath string) error {
 		CookieName:     h.config.cookie.name,
 		SessionType:    h.config.sessionType,
 		CookieDomain:   h.config.cookie.domain,
+		DBPool:         h.DB.Pool,
 	}
 	h.Session = sess.InitSession()
 
