@@ -18,10 +18,14 @@ github.com/Microsoft/go-winio v0.6.1 h1:9/kr64B9VUZrLm5YYwbGtUJnMgqWVOdUAXu6Migc
 github.com/Microsoft/go-winio v0.6.1/go.mod h1:LRdKpFKfdobln8UmuiYcKPot9D2v6svN5+sAH+4kjUM=
 github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 h1:TngWCqHvy9oXAN6lEVMRuU21PR1EtLVZJmdB18Gu3Rw=
 github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5/go.mod h1:lmUJ/7eu/Q8D7ML55dXQrVaamCz2vxCfdQBasLZfHKk=
+github.com/alexedwards/scs/mysqlstore v0.0.0-20240316134038-7e11d57e8885 h1:C7QAamNjR5yz6di4KJWAKcnxueKBgq4L/JGXhlnu35w=
+github.com/alexedwards/scs/mysqlstore v0.0.0-20240316134038-7e11d57e8885/go.mod h1:p8jK3D80sw1PFrCSdlcJF1O75bp55HqbgDyyCLM0FrE=
 github.com/alexedwards/scs/postgresstore v0.0.0-20240316134038-7e11d57e8885 h1:012heQQRqytD5mSoXNzhfoTQaoPj6iRMvKh9DlUScoI=
 github.com/alexedwards/scs/postgresstore v0.0.0-20240316134038-7e11d57e8885/go.mod h1:TDDdV/xnjj+/4zBQ9a2k+i2AbuAdY7SQjPUh5zoTZ3M=
 github.com/alexedwards/scs/v2 v2.7.0 h1:DY4rqLCM7UIR9iwxFS0++z1NhTzQlKV30aMHkJCDWKw=
 github.com/alexedwards/scs/v2 v2.7.0/go.mod h1:ToaROZxyKukJKT/xLcVQAChi5k6+Pn1Gvmdl7h3RRj8=
+github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 h1:DklsrG3dyBCFEj5IhUbnKptjxatkF07cF2ak3yi77so=
+github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2/go.mod h1:WaHUgvxTVq04UNunO+XhnAqY/wQc+bxr74GqbsZ/Jqw=
 github.com/cenkalti/backoff/v4 v4.1.3 h1:cFAlzYUlVYDysBEH2T5hyJZMh3+5+WCBvSnK6Q8UtC4=
 github.com/cenkalti/backoff/v4 v4.1.3/go.mod h1:scbssz8iZGpm3xbr14ovlUdkxfGXNInqkPWOWmG2CLw=
 github.com/checkpoint-restore/go-criu/v5 v5.3.0/go.mod h1:E/eQpaFtUKGOOSEBZgmKAcn+zUUwWxqcaKZlF54wK8E=
