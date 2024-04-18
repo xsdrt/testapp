@@ -22,7 +22,7 @@ type Models struct {
 	Tokens Token
 }
 
-// New initializes the models package for use...
+// New initializezes the models package for use...
 func New(databasePool *sql.DB) Models {
 	db = databasePool
 
