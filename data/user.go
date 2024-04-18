@@ -7,6 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	up "github.com/upper/db/v4"
+	"github.com/xsdrt/hispeed2"
 )
 
 type User struct {
@@ -24,6 +25,13 @@ type User struct {
 // Table returns the table name assoc. with this model in the database...
 func (u *User) Table() string { //this func gives us the ability to overide the users in the database
 	return "users" // so anytime refering to the table users in the db can overide; so,if legacy is called customers, overide and will refer to the users in the DB...
+}
+
+func (u *User) Validate(validator *hispeed2.Validation) {
+	validator.Check(u.LastName != "", "last_name", "Must provide a last name")
+	validator.Check(u.FirstName != "", "first_name", "Must provide a first name")
+	validator.Check(u.Email != "", "email", "Must provide a valid email address")
+	validator.IsEmail("email", u.Email)
 }
 
 // GetAll returns a slice of every user...

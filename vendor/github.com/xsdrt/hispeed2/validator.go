@@ -43,7 +43,7 @@ func (v *Validation) Has(field string, r *http.Request) bool { // for a form pos
 func (v *Validation) Required(r *http.Request, fields ...string) { // check for required fields...
 	for _, field := range fields {
 		value := r.Form.Get(field)
-		if strings.TrimSpace(value) == "" {
+		if strings.TrimSpace(value) == "" { // if after blank (empty spaces) are trimmed out and still blank then error...
 			v.AddError(field, "This field cannot be blank")
 		}
 	}
@@ -51,11 +51,11 @@ func (v *Validation) Required(r *http.Request, fields ...string) { // check for 
 
 func (v *Validation) Check(ok bool, key, message string) {
 	if !ok {
-		v.AddError(key, message) //  key is the field in question...
+		v.AddError(key, message) //  key is the name of the field in question...
 	}
 }
 
-func (v *Validation) IsEmai(field, value string) {
+func (v *Validation) IsEmail(field, value string) {
 	if !govalidator.IsEmail(value) {
 		v.AddError(field, "Requires a valid email address")
 	}
