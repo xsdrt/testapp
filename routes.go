@@ -13,13 +13,13 @@ func (a *application) routes() *chi.Mux {
 	// middleware must come before any routes chi router expects to find middleware 1st so always at the top...
 
 	// add routes here...
-	a.App.Routes.Get("/", a.Handlers.Home)
+	a.get("/", a.Handlers.Home)
 	a.App.Routes.Get("/go-page", a.Handlers.GoPage)
 	a.App.Routes.Get("/jet-page", a.Handlers.JetPage)
 	a.App.Routes.Get("/sessions", a.Handlers.SessionTest)
 
 	a.App.Routes.Get("/users/login", a.Handlers.UserLogin)
-	a.App.Routes.Post("/users/login", a.Handlers.PostUserLogin)
+	a.post("/users/login", a.Handlers.PostUserLogin)
 	a.App.Routes.Get("/users/logout", a.Handlers.Logout)
 
 	a.App.Routes.Get("/form", a.Handlers.Form)

@@ -14,7 +14,7 @@ type Handlers struct {
 }
 
 func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {
-	err := h.App.Render.Page(w, r, "home", nil, nil)
+	err := h.render(w, r, "home", nil, nil)		// using the handler helper func from the convience.go file in Handlers...
 	if err != nil {
 		h.App.ErrorLog.Println("error renderering:", err)
 	}
