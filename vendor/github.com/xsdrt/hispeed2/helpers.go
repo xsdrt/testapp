@@ -53,14 +53,14 @@ func (h *HiSpeed2) CreateFileIfNotExists(path string) error { // Create an empty
 }
 
 type Encryption struct {
-	key []byte // The key to encrypt and decrypt
+	Key []byte // The key to encrypt and decrypt
 }
 
 // Take any length of string an encrypt it, then base64 encode it and return the encrypted string
 func (e *Encryption) Encrypt(text string) (string, error) {
 	plaintext := []byte(text)
 
-	block, err := aes.NewCipher(e.key)
+	block, err := aes.NewCipher(e.Key)
 	if err != nil {
 		return "", err
 	}
@@ -80,7 +80,7 @@ func (e *Encryption) Encrypt(text string) (string, error) {
 func (e *Encryption) Decrypt(cryptoText string) (string, error) {
 	ciphertext, _ := base64.URLEncoding.DecodeString(cryptoText)
 
-	block, err := aes.NewCipher(e.key)
+	block, err := aes.NewCipher(e.Key)
 	if err != nil {
 		return "", err
 	}
