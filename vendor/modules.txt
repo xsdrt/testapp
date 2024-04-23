@@ -93,6 +93,9 @@ github.com/golang-migrate/migrate/v4/internal/url
 github.com/golang-migrate/migrate/v4/source
 github.com/golang-migrate/migrate/v4/source/file
 github.com/golang-migrate/migrate/v4/source/iofs
+# github.com/gomodule/redigo v1.9.2
+## explicit; go 1.17
+github.com/gomodule/redigo/redis
 # github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 ## explicit; go 1.13
 github.com/google/shlex
@@ -238,6 +241,7 @@ github.com/xeipuuv/gojsonschema
 # github.com/xsdrt/hispeed2 v0.0.0-20231212023131-649659969455 => ../hispeed2
 ## explicit; go 1.21.5
 github.com/xsdrt/hispeed2
+github.com/xsdrt/hispeed2/cache
 github.com/xsdrt/hispeed2/render
 github.com/xsdrt/hispeed2/session
 # go.uber.org/atomic v1.7.0

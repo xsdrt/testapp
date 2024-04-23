@@ -24,3 +24,8 @@ type Database struct { //Exporting
 	DataType string //I.E. Postgres, MariaDb etc...
 	Pool     *sql.DB
 }
+type redisConfig struct {
+	host     string
+	password string
+	prefix   string
+}

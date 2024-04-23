@@ -11,7 +11,9 @@ import (
 	"github.com/CloudyKit/jet/v6"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi/v5"
+	"github.com/gomodule/redigo/redis"
 	"github.com/joho/godotenv"
+	"github.com/xsdrt/hispeed2/cache"
 	"github.com/xsdrt/hispeed2/render"
 	"github.com/xsdrt/hispeed2/session"
 )
@@ -34,6 +36,7 @@ type HiSpeed2 struct {
 	JetViews      *jet.Set
 	config        config
 	EncryptionKey string
+	Cache         cache.Cache
 }
 
 type config struct {
@@ -42,6 +45,7 @@ type config struct {
 	cookie      cookieConfig
 	sessionType string
 	database    databaseConfig
+	redis       redisConfig
 }
 
 // New reads the .env file, creates our app config, populates the HiSpeed2 type with settings
@@ -84,6 +88,11 @@ func (h *HiSpeed2) New(rootPath string) error {
 		}
 	}
 
+	if os.Getenv("CACHE") == "redis" {	// Check to see if need to connect to redis; user might not be using redis...
+		useRedisCache := h.createClientRedisCache()
+		h.Cache = useRedisCache
+	}
+
 	h.InfoLog = infoLog
 	h.ErrorLog = errorLog
 	h.Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
@@ -105,6 +114,11 @@ func (h *HiSpeed2) New(rootPath string) error {
 		database: databaseConfig{
 			database: os.Getenv("DATABASE_TYPE"),
 			dsn:      h.BuildDSN(),
+		},
+		redis: redisConfig{
+			host:     os.Getenv("REDIS_HOST"),
+			password: os.Getenv("REDIS_PASSWORD"),
+			prefix:   os.Getenv("REDIS_PREFIX"),
 		},
 	}
 
@@ -192,6 +206,34 @@ func (h *HiSpeed2) createRenderer() {
 	}
 	h.Render = &myRenderer
 
+}
+
+// Create a Redis cacheClient
+func (h *HiSpeed2) createClientRedisCache() *cache.RedisCache {
+	cacheClient := cache.RedisCache{
+		Conn:   h.createRedisPool(),
+		Prefix: h.config.redis.prefix,
+	}
+	return &cacheClient
+}
+
+// Create a Redis Pool
+func (h *HiSpeed2) createRedisPool() *redis.Pool {
+	return &redis.Pool{
+		MaxIdle:     50,
+		MaxActive:   10000,
+		IdleTimeout: 240 * time.Second,
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial("tcp",
+				h.config.redis.host,
+				redis.DialPassword(h.config.redis.password))
+		},
+
+		TestOnBorrow: func(conn redis.Conn, t time.Time) error {
+			_, err := conn.Do("PING")
+			return err
+		},
+	}
 }
 
 func (h *HiSpeed2) BuildDSN() string {
