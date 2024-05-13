@@ -40,7 +40,27 @@ func (h *Handlers) SaveInCache(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) GetFromCache(w http.ResponseWriter, r *http.Request) {
+	var userInput struct {
+		Name string `json:"name"`
+		CSRF string `json:"csrf_token"`
+	}
 
+	err := h.App.ReadJSON(w, r, &userInput)
+	if err != nil {
+		h.App.Error500(w, r) // Internal Server error...
+		return
+	}
+
+	fromCache, err := h.App.Cache.Get(userInput.Name)
+	if err != nil {
+		h.App.Error500(w, r)
+		return
+	}
+
+	var resp struct {
+		Error   bool   `jason:"error"`
+		Message string `json:"message"`
+	}
 }
 
 func (h *Handlers) DeleteFromCache(w http.ResponseWriter, r *http.Request) {
