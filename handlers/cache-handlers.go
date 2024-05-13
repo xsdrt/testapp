@@ -40,6 +40,9 @@ func (h *Handlers) SaveInCache(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) GetFromCache(w http.ResponseWriter, r *http.Request) {
+	var msg string
+	var inCache = true
+
 	var userInput struct {
 		Name string `json:"name"`
 		CSRF string `json:"csrf_token"`
@@ -51,7 +54,68 @@ func (h *Handlers) GetFromCache(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fromCache, err := h.App.Cache.Get(userInput.Name)
+	fromCache, err := h.App.Cache.Get(userInput.Name) // Populate the cache from redis...
+	if err != nil {
+		msg = "Not found in cache!"
+		inCache = false
+	}
+
+	var resp struct {
+		Error   bool   `jason:"error"`
+		Message string `json:"message"`
+		Value   string `json:"value"`
+	}
+
+	if inCache {
+		resp.Error = false
+		resp.Message = "Success"
+		resp.Value = fromCache.(string)
+	} else {
+		resp.Error = true
+		resp.Message = msg
+	}
+	_ = h.App.WriteJSON(w, http.StatusCreated, resp)
+}
+
+func (h *Handlers) DeleteFromCache(w http.ResponseWriter, r *http.Request) {
+	var userInput struct {
+		Name string `json:"name"`
+		CSRF string `json:"csrf_token"`
+	}
+
+	err := h.App.ReadJSON(w, r, &userInput)
+	if err != nil {
+		h.App.Error500(w, r)
+		return
+	}
+
+	err = h.App.Cache.Forget(userInput.Name)
+	if err != nil {
+		h.App.Error500(w, r)
+		return
+	}
+	var resp struct {
+		Error   bool   `jason:"error"`
+		Message string `json:"message"`
+	}
+	resp.Error = false
+	resp.Message = "Deleted from cache (if existed in cache)"
+
+	_ = h.App.WriteJSON(w, http.StatusCreated, resp)
+}
+
+func (h *Handlers) EmptyCache(w http.ResponseWriter, r *http.Request) {
+	var userInput struct {
+		CSRF string `json:"csrf_token"`
+	}
+
+	err := h.App.ReadJSON(w, r, &userInput)
+	if err != nil {
+		h.App.Error500(w, r)
+		return
+	}
+
+	err = h.App.Cache.Empty()
 	if err != nil {
 		h.App.Error500(w, r)
 		return
@@ -61,12 +125,8 @@ func (h *Handlers) GetFromCache(w http.ResponseWriter, r *http.Request) {
 		Error   bool   `jason:"error"`
 		Message string `json:"message"`
 	}
-}
+	resp.Error = false
+	resp.Message = "Emptied the cache!"
 
-func (h *Handlers) DeleteFromCache(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (h *Handlers) EmptyCache(w http.ResponseWriter, r *http.Request) {
-
+	_ = h.App.WriteJSON(w, http.StatusCreated, resp)
 }
