@@ -9,11 +9,13 @@ import (
 	"github.com/xsdrt/hispeed2"
 )
 
+// Handlers is the type for handlers, gives access to HiSpeed2 and models...
 type Handlers struct {
 	App    *hispeed2.HiSpeed2
 	Models data.Models
 }
 
+// Home is the handler to render the home page.
 func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {
 	err := h.render(w, r, "home", nil, nil) // using the handler helper func from the convience.go file in Handlers...
 	if err != nil {
@@ -21,6 +23,7 @@ func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GoPage is the handler to demo rendering a Go template...
 func (h *Handlers) GoPage(w http.ResponseWriter, r *http.Request) {
 	err := h.App.Render.GoPage(w, r, "home", nil)
 	if err != nil {
@@ -28,6 +31,7 @@ func (h *Handlers) GoPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// JetPage is the handler for demo rendering a jet template ...
 func (h *Handlers) JetPage(w http.ResponseWriter, r *http.Request) {
 	err := h.App.Render.JetPage(w, r, "jet-template", nil, nil)
 	if err != nil {
@@ -35,6 +39,7 @@ func (h *Handlers) JetPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Session Test is the handler to demo session functionality...
 func (h *Handlers) SessionTest(w http.ResponseWriter, r *http.Request) {
 	myData := "bar"
 
@@ -51,6 +56,7 @@ func (h *Handlers) SessionTest(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// JSON is the handler to demo json responses...
 func (h *Handlers) JSON(w http.ResponseWriter, r *http.Request) {
 	var payload struct {
 		ID      int64    `json:"id"`
@@ -68,6 +74,7 @@ func (h *Handlers) JSON(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// XML is the handler to demo XML responses...
 func (h *Handlers) XML(w http.ResponseWriter, r *http.Request) {
 	type Payload struct {
 		ID      int64    `xml:"id"`
@@ -86,6 +93,7 @@ func (h *Handlers) XML(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// DownLoadFiles is the handler to demo file download responses...
 func (h *Handlers) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	h.App.DownloadFile(w, r, "./public/images", "hsld.jpg")
 }

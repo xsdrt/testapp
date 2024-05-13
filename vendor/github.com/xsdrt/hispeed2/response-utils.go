@@ -3,12 +3,33 @@ package hispeed2
 import (
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"path"
 	"path/filepath"
 )
 
+// ReadJSON reads arbitary json...
+func (h *HiSpeed2) ReadJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
+	maxBytes := 1048576 // one megabyte (sanity check)
+	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
+	dec := json.NewDecoder(r.Body)
+	err := dec.Decode(data)
+	if err != nil {
+		return err
+	}
+
+	err = dec.Decode(&struct{}{}) // Allow only (1) one entry in the json file (prevent nefarius users)
+	if err != io.EOF {
+		return errors.New("body must only contain a single json value")
+	}
+
+	return nil
+}
+
+// WriteJSON writes json from arbuitary data...
 func (h *HiSpeed2) WriteJSON(w http.ResponseWriter, status int, data interface{}, headers ...http.Header) error {
 	out, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
