@@ -147,12 +147,22 @@ func (h *HiSpeed2) New(rootPath string) error {
 	h.Session = sess.InitSession()
 	h.EncryptionKey = os.Getenv("KEY")
 
-	var views = jet.NewSet(
-		jet.NewOSFileSystemLoader(fmt.Sprintf("%s/views", rootPath)),
-		//jet.InDevelopmentMode(), // allows to work on jet template with out restarting app after changes
-	)
+	if h.Debug {
+		var views = jet.NewSet(
+			jet.NewOSFileSystemLoader(fmt.Sprintf("%s/views", rootPath)),
+			jet.InDevelopmentMode(), // allows to work on jet template with out restarting app after changes
+		)
 
-	h.JetViews = views
+		h.JetViews = views
+
+	} else {
+		var views = jet.NewSet(
+			jet.NewOSFileSystemLoader(fmt.Sprintf("%s/views", rootPath)),
+		)
+
+		h.JetViews = views
+
+	}
 
 	h.createRenderer()
 
