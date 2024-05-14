@@ -53,10 +53,10 @@ func (h *Handlers) encrypt(text string) (string, error) {
 func (h *Handlers) decrypt(crypto string) (string, error) {
 	enc := hispeed2.Encryption{Key: []byte(h.App.EncryptionKey)}
 
-	encrypted, err := enc.Decrypt(crypto)
+	decrypted, err := enc.Decrypt(crypto)
 	if err != nil {
 		return "", err
 	}
-	return encrypted, nil
+	return decrypted, nil
 
 }
