@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testapp/data"
+	"time"
 
 	"github.com/CloudyKit/jet/v6"
 	"github.com/xsdrt/hispeed2"
@@ -17,6 +18,7 @@ type Handlers struct {
 
 // Home is the handler to render the home page.
 func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {
+	defer h.App.LoadTime(time.Now())
 	err := h.render(w, r, "home", nil, nil) // using the handler helper func from the convience.go file in Handlers...
 	if err != nil {
 		h.App.ErrorLog.Println("error renderering:", err)
