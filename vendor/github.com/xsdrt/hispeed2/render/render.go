@@ -10,6 +10,7 @@ import (
 
 	"github.com/CloudyKit/jet/v6"
 	"github.com/alexedwards/scs/v2"
+	"github.com/justinas/nosurf"
 )
 
 type Render struct {
@@ -37,8 +38,9 @@ type TemplateData struct {
 func (h *Render) defaultData(td *TemplateData, r *http.Request) *TemplateData {
 	td.Secure = h.Secure
 	td.ServerName = h.ServerName
+	td.CSRFToken = nosurf.Token(r) // Passes the csrf token to every template used for the site
 	td.Port = h.Port
-	if h.Session.Exists(r.Context(), "userID") { // if this exists then by default the user must be authenticated...
+	if h.Session.Exists(r.Context(), "userID") { // if userID exists then by default the user must be authenticated...
 		td.IsAuthenticated = true
 	}
 	return td

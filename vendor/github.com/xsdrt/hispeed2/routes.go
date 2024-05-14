@@ -16,6 +16,7 @@ func (h *HiSpeed2) routes() http.Handler {
 	}
 	mux.Use(middleware.Recoverer)
 	mux.Use(h.SessionLoad)
+	mux.Use(h.NoSurf)
 
 	return mux
 }
