@@ -20,6 +20,8 @@ import (
 
 const version = "1.0.0"
 
+var useRedisCache *cache.RedisCache
+
 // Hispeed2  is the overall type for the Hispeed2 package... Exported members in tghis type
 // are available to any applicatiomn that uses it...Other than the config as no reason for anybody using Hispeed 2 needs to know this info...
 type HiSpeed2 struct {
@@ -88,8 +90,8 @@ func (h *HiSpeed2) New(rootPath string) error {
 		}
 	}
 
-	if os.Getenv("CACHE") == "redis" {	// Check to see if need to connect to redis; user might not be using redis...
-		useRedisCache := h.createClientRedisCache()
+	if os.Getenv("CACHE") == "redis" || os.Getenv("SESSION_TYPE") == "redis" { // Check to see if need to connect to redis; user might not be using redis...
+		useRedisCache = h.createClientRedisCache()
 		h.Cache = useRedisCache
 	}
 
@@ -130,8 +132,18 @@ func (h *HiSpeed2) New(rootPath string) error {
 		CookieName:     h.config.cookie.name,
 		SessionType:    h.config.sessionType,
 		CookieDomain:   h.config.cookie.domain,
-		DBPool:         h.DB.Pool,
+		//DBPool:         h.DB.Pool,  // this might be set to nil if not using a db
 	}
+
+	switch h.config.sessionType {
+	case "redis":
+		sess.RedisPool = useRedisCache.Conn
+
+	case "mysql", "mariadb", "postgres", "postgresql":
+		sess.DBPool = h.DB.Pool
+
+	}
+
 	h.Session = sess.InitSession()
 	h.EncryptionKey = os.Getenv("KEY")
 

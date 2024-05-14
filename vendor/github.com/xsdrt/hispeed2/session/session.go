@@ -6,9 +6,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
 	"github.com/alexedwards/scs/mysqlstore"
 	"github.com/alexedwards/scs/postgresstore"
+	"github.com/alexedwards/scs/redisstore"
 	"github.com/alexedwards/scs/v2"
+	"github.com/gomodule/redigo/redis"
 )
 
 // using the alexedwards/scs package for session control...
@@ -20,6 +23,7 @@ type Session struct {
 	SessionType    string
 	CookieSecure   string
 	DBPool         *sql.DB
+	RedisPool      *redis.Pool
 }
 
 func (h *Session) InitSession() *scs.SessionManager {
@@ -53,6 +57,7 @@ func (h *Session) InitSession() *scs.SessionManager {
 	// which session store?
 	switch strings.ToLower(h.SessionType) {
 	case "redis":
+		session.Store = redisstore.New(h.RedisPool)
 
 	case "mysql", "mariadb":
 		session.Store = mysqlstore.New(h.DBPool)
