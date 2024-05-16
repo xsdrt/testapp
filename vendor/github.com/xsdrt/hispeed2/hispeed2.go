@@ -10,9 +10,11 @@ import (
 
 	"github.com/CloudyKit/jet/v6"
 	"github.com/alexedwards/scs/v2"
+	"github.com/dgraph-io/badger/v3"
 	"github.com/go-chi/chi/v5"
 	"github.com/gomodule/redigo/redis"
 	"github.com/joho/godotenv"
+	"github.com/robfig/cron/v3"
 	"github.com/xsdrt/hispeed2/cache"
 	"github.com/xsdrt/hispeed2/render"
 	"github.com/xsdrt/hispeed2/session"
@@ -21,6 +23,9 @@ import (
 const version = "1.0.0"
 
 var useRedisCache *cache.RedisCache
+var myBadgerCache *cache.BadgerCache
+var redisPool *redis.Pool
+var badgerConn *badger.DB
 
 // Hispeed2  is the overall type for the Hispeed2 package... Exported members in tghis type
 // are available to any applicatiomn that uses it...Other than the config as no reason for anybody using Hispeed 2 needs to know this info...
@@ -39,6 +44,7 @@ type HiSpeed2 struct {
 	config        config
 	EncryptionKey string
 	Cache         cache.Cache
+	Scheduler     *cron.Cron
 }
 
 type config struct {
@@ -90,9 +96,26 @@ func (h *HiSpeed2) New(rootPath string) error {
 		}
 	}
 
+	// Check the .env to see if you using redis for the cache
 	if os.Getenv("CACHE") == "redis" || os.Getenv("SESSION_TYPE") == "redis" { // Check to see if need to connect to redis; user might not be using redis...
 		useRedisCache = h.createClientRedisCache()
 		h.Cache = useRedisCache
+		redisPool = useRedisCache.Conn
+	}
+
+	// check the .env to see if using badger for cache
+	if os.Getenv("CACHE") == "badger" {
+		myBadgerCache = h.createClientBadgerCache()
+		h.Cache = myBadgerCache
+		badgerConn = myBadgerCache.Conn
+
+		_, err = h.Scheduler.AddFunc("@daily", func() {
+			_ = myBadgerCache.Conn.RunValueLogGC(0.7)
+		})
+		if err != nil {
+			return err
+		}
+
 	}
 
 	h.InfoLog = infoLog
@@ -193,7 +216,17 @@ func (h *HiSpeed2) ListenAndServe() {
 		WriteTimeout: 600 * time.Second, // Longtime out for dev purposes for now...
 	}
 
-	defer h.DB.Pool.Close()
+	if h.DB.Pool != nil {
+		defer h.DB.Pool.Close()
+	}
+
+	if redisPool != nil {
+		defer redisPool.Close()
+	}
+
+	if badgerConn != nil {
+		defer badgerConn.Close()
+	}
 
 	h.InfoLog.Printf("Listening on port %s", os.Getenv("PORT"))
 	err := srv.ListenAndServe()
@@ -239,6 +272,14 @@ func (h *HiSpeed2) createClientRedisCache() *cache.RedisCache {
 	return &cacheClient
 }
 
+// Create a Badger cacheClient
+func (h *HiSpeed2) createClientBadgerCache() *cache.BadgerCache {
+	cacheClient := cache.BadgerCache{
+		Conn: h.createBadgerConn(),
+	}
+	return &cacheClient
+}
+
 // Create a Redis Pool
 func (h *HiSpeed2) createRedisPool() *redis.Pool {
 	return &redis.Pool{
@@ -256,6 +297,15 @@ func (h *HiSpeed2) createRedisPool() *redis.Pool {
 			return err
 		},
 	}
+}
+
+// Create a Badger pool
+func (h *HiSpeed2) createBadgerConn() *badger.DB {
+	db, err := badger.Open(badger.DefaultOptions(h.RootPath + "/tmp/badger"))
+	if err != nil {
+		return nil
+	}
+	return db
 }
 
 func (h *HiSpeed2) BuildDSN() string {
