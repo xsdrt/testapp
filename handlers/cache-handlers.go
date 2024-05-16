@@ -68,7 +68,7 @@ func (h *Handlers) GetFromCache(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fromCache, err := h.App.Cache.Get(userInput.Name) // Populate the cache from redis...
+	fromCache, err := h.App.Cache.Get(userInput.Name) // Populate the cache from redis or badger...
 	if err != nil {
 		msg = "Not found in cache!"
 		inCache = false
