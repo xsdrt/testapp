@@ -96,6 +96,9 @@ func (h *HiSpeed2) New(rootPath string) error {
 		}
 	}
 
+	scheduler := cron.New() // Cannot schedule a cron job prior to creating a new cron obj...
+	h.Scheduler = scheduler
+
 	// Check the .env to see if you using redis for the cache
 	if os.Getenv("CACHE") == "redis" || os.Getenv("SESSION_TYPE") == "redis" { // Check to see if need to connect to redis; user might not be using redis...
 		useRedisCache = h.createClientRedisCache()
