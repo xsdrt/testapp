@@ -125,10 +125,10 @@ func (h *HiSpeed2) New(rootPath string) error {
 
 	h.InfoLog = infoLog
 	h.ErrorLog = errorLog
-	h.Mail = h.createMailer()
 	h.Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
 	h.Version = version
 	h.RootPath = rootPath
+	h.Mail = h.createMailer()
 	h.Routes = h.routes().(*chi.Mux) // Cast to a pointer of chi.Mux...
 
 	h.config = config{

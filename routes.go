@@ -48,11 +48,18 @@ func (a *application) routes() *chi.Mux {
 			Data:        nil,
 		}
 
-		a.App.Mail.Jobs <- msg
-		res := <-a.App.Mail.Results
-		if res.Error != nil {
-			a.App.ErrorLog.Println(res.Error)
+		// a.App.Mail.Jobs <- msg
+		// res := <-a.App.Mail.Results
+		// if res.Error != nil {
+		// 	a.App.ErrorLog.Println(res.Error)
+		// }
+		err := a.App.Mail.SendSTMPMessage(msg)
+		if err != nil {
+			a.App.ErrorLog.Println(err)
+			return
 		}
+
+		fmt.Fprint(w, "Sent mail!")
 	})
 
 	a.App.Routes.Get("/create-user", func(w http.ResponseWriter, r *http.Request) {
