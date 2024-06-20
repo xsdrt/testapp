@@ -16,6 +16,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/robfig/cron/v3"
 	"github.com/xsdrt/hispeed2/cache"
+	"github.com/xsdrt/hispeed2/mailer"
 	"github.com/xsdrt/hispeed2/render"
 	"github.com/xsdrt/hispeed2/session"
 )
@@ -45,6 +46,7 @@ type HiSpeed2 struct {
 	EncryptionKey string
 	Cache         cache.Cache
 	Scheduler     *cron.Cron
+	Mail          mailer.Mail
 }
 
 type config struct {
@@ -61,7 +63,7 @@ type config struct {
 func (h *HiSpeed2) New(rootPath string) error {
 	pathConfig := initPaths{
 		rootPath:    rootPath,
-		folderNames: []string{"handlers", "migrations", "views", "data", "public", "tmp", "logs", "middleware"},
+		folderNames: []string{"handlers", "migrations", "views", "mail", "data", "public", "tmp", "logs", "middleware"},
 	}
 
 	err := h.Init(pathConfig)
@@ -123,6 +125,7 @@ func (h *HiSpeed2) New(rootPath string) error {
 
 	h.InfoLog = infoLog
 	h.ErrorLog = errorLog
+	h.Mail = h.createMailer()
 	h.Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
 	h.Version = version
 	h.RootPath = rootPath
@@ -191,6 +194,9 @@ func (h *HiSpeed2) New(rootPath string) error {
 	}
 
 	h.createRenderer()
+
+	// Run in background the mail channel/listener...
+	go h.Mail.ListenForMail()
 
 	return nil
 }
@@ -264,6 +270,27 @@ func (h *HiSpeed2) createRenderer() {
 	}
 	h.Render = &myRenderer
 
+}
+
+func (h *HiSpeed2) createMailer() mailer.Mail {
+	port, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
+	m := mailer.Mail{
+		Domain:      os.Getenv("MAIL_DOMAIN"),
+		Templates:   h.RootPath + "/mail",
+		Host:        os.Getenv("SMTP_HOST"),
+		Port:        port,
+		Username:    os.Getenv("SMTP_USERNAME"),
+		Password:    os.Getenv("SMTP_PASSWORD"),
+		Encryption:  os.Getenv("SMTP_ENCRYPTION"),
+		FromName:    os.Getenv("FROM_NAME"),
+		FromAddress: os.Getenv("FROM_ADDRESS"),
+		Jobs:        make(chan mailer.Message, 20),
+		Results:     make(chan mailer.Result, 20),
+		API:         os.Getenv("MAILER_API"),
+		APIKey:      os.Getenv("MAILER_KEY"),
+		APIUrl:      os.Getenv("MAILER_URL"),
+	}
+	return m
 }
 
 // Create a Redis cacheClient
