@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"time"
 
-	apimail "github.com/ainsleyclark/go-mail"
-	"github.com/vanng822/go-premailer/premailer"
-	mail "github.com/xhit/go-simple-mail/v2"
+	apimail "github.com/ainsleyclark/go-mail"    // Allow to use MailGun: SparkPost or SendGrid...
+	"github.com/vanng822/go-premailer/premailer" // Used to inline the CSS...
+	mail "github.com/xhit/go-simple-mail/v2"     //go-simple-mail; easy way to send mail with a client...
 )
 
 // Mail holds the information needed to connect to a SMTP server
@@ -49,7 +49,7 @@ type Result struct {
 }
 
 // ListenForMail listens to the mail channel and sends mail
-// when it recieves a payload.  It runs contiually in the background,
+// when it recieves a payload.  It runs continually in the background,
 // and sends error/sucess messages back on the results channel.
 // Note that if an api and api key are set, it will prefer using
 // an api to send mail...
@@ -76,7 +76,7 @@ func (m *Mail) Send(msg Message) error {
 
 func (m *Mail) ChooseAPI(msg Message) error {
 	switch m.API {
-	case "mailgun", "sparkpost", "sendgrid":
+	case "mailgun", "sparkpost", "sendgrid": // This is set in the .env file...
 		return m.SendUsingAPI(msg, m.API)
 	default:
 		return fmt.Errorf("unknown api %s; only mailgun, sparkpost or sendgrid supported", m.API)
@@ -216,7 +216,7 @@ func (m *Mail) getEncryption(e string) mail.Encryption {
 		return mail.EncryptionSSL
 	case "none": // Only during develpment...
 		return mail.EncryptionNone
-	default: // If the user does not specify the encrption they want use tls by default
+	default: // If the user does not specify the encrption assume want to use tls by default
 		return mail.EncryptionSTARTTLS
 	}
 
@@ -260,7 +260,7 @@ func (m *Mail) buildPlainTextMessage(msg Message) (string, error) {
 	return plainMessage, nil
 }
 
-func (m *Mail) inlineCSS(s string) (string, error) { // Using the premailer pkg in this fun...
+func (m *Mail) inlineCSS(s string) (string, error) { // Using the premailer pkg in this func...
 	options := premailer.Options{
 		RemoveClasses:     false,
 		CssToAttributes:   false,

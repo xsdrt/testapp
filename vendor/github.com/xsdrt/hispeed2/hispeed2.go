@@ -128,7 +128,7 @@ func (h *HiSpeed2) New(rootPath string) error {
 	h.Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
 	h.Version = version
 	h.RootPath = rootPath
-	h.Mail = h.createMailer()
+	h.Mail = h.createMailer()        // Make sure and place this after setting root path or error...
 	h.Routes = h.routes().(*chi.Mux) // Cast to a pointer of chi.Mux...
 
 	h.config = config{
