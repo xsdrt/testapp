@@ -40,24 +40,24 @@ func (a *application) routes() *chi.Mux {
 
 	a.get("/test-mail", func(w http.ResponseWriter, r *http.Request) {
 		msg := mailer.Message{
-			From:        "mailgun@sandboxa5b397a415b64013994d6f8e84ad9389.mailgun.org",
+			From:        "test@example.com",
 			To:          "m_redinger@hotmail.com",
-			Subject:     "Test Subject - sent using an API",
+			Subject:     "Test Subject - sent using an channel",
 			Template:    "test",
 			Attachments: nil,
 			Data:        nil,
 		}
 
-		a.App.Mail.Jobs <- msg
-		res := <-a.App.Mail.Results
-		if res.Error != nil {
-			a.App.ErrorLog.Println(res.Error)
-		}
-		// err := a.App.Mail.SendSTMPMessage(msg)
-		// if err != nil {
-		// 	a.App.ErrorLog.Println(err)
-		// 	return
+		// a.App.Mail.Jobs <- msg
+		// res := <-a.App.Mail.Results
+		// if res.Error != nil {
+		// 	a.App.ErrorLog.Println(res.Error)
 		// }
+		err := a.App.Mail.SendSTMPMessage(msg)
+		if err != nil {
+			a.App.ErrorLog.Println(err)
+			return
+		}
 
 		fmt.Fprint(w, "Sent mail!")
 	})
